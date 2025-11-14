@@ -4,7 +4,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 # ကိုကို့ Token
-TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN_HERE'
+TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'
 UPLOAD_FOLDER = 'static/uploads'
 
 # Render က ပေးတဲ့ Database URL
