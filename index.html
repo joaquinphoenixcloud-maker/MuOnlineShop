@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ko Ko Fashion Shop</title>
+    <style>
+        /* အခြေခံ ဒီဇိုင်းများ */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* ခေါင်းစဉ်အပိုင်း (Header) */
+        header {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        /* ကုန်ပစ္စည်းများ ပြသသည့်အပိုင်း */
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* ကုန်ပစ္စည်း ကဒ်ပြားလေးများ */
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* ဓာတ်ပုံနေရာ */
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 5px;
+            background-color: #ddd;
+        }
+
+        /* စာသားနှင့် ဈေးနှုန်း */
+        .product-name {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+        }
+        .price {
+            color: #e63946;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* ဝယ်ရန် ခလုတ် */
+        .buy-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .buy-btn:hover {
+            background-color: #555;
+        }
+
+        /* အောက်ဆုံးစာသား (Footer) */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Ko Ko Fashion Store</h1>
+        <p>နောက်ဆုံးပေါ် ဖက်ရှင်များကို တစ်နေရာတည်းမှာ ရယူလိုက်ပါ</p>
+    </header>
+
+    <div class="container">
+        <div class="product-card">
+            <img src="https://placehold.co/300x400?text=Dress+1" alt="အင်္ကျီပုံ" class="product-image">
+            <h3 class="product-name">ဒီဇိုင်းသစ် ဂါဝန်</h3>
+            <p class="price">15,000 ကျပ်</p>
+            <button class="buy-btn" onclick="alert('မှာယူလိုပါက Chat Box သို့ လာခဲ့ပေးပါရှင်')">အသေးစိတ်ကြည့်မည်</button>
+        </div>
+
+        <div class="product-card">
+            <img src="https://placehold.co/300x400?text=Shirt+1" alt="အင်္ကျီပုံ" class="product-image">
+            <h3 class="product-name">အမျိုးသားဝတ် ရှပ်အင်္ကျီ</h3>
+            <p class="price">12,000 ကျပ်</p>
+            <button class="buy-btn" onclick="alert('မှာယူလိုပါက Chat Box သို့ လာခဲ့ပေးပါရှင်')">အသေးစိတ်ကြည့်မည်</button>
+        </div>
+
+        <div class="product-card">
+            <img src="https://placehold.co/300x400?text=T-Shirt" alt="အင်္ကျီပုံ" class="product-image">
+            <h3 class="product-name">Couple T-Shirt</h3>
+            <p class="price">8,500 ကျပ်</p>
+            <button class="buy-btn" onclick="alert('မှာယူလိုပါက Chat Box သို့ လာခဲ့ပေးပါရှင်')">အသေးစိတ်ကြည့်မည်</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Contact Us: 09-123456789 | Telegram: @kokofashion</p>
+    </footer>
+
+</body>
+</html>
