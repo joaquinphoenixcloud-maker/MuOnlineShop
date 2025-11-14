@@ -40,7 +40,9 @@
             font-size: 20px;
             margin-left: 15px;
             cursor: pointer;
+            transition: transform 0.1s;
         }
+        .nav-icons i:active { transform: scale(0.9); } /* နှိပ်ရင် ကျုံ့သွားသည့် Effect */
 
         /* Search Bar */
         #searchContainer {
@@ -93,9 +95,12 @@
             color: #333;
             font-weight: 500;
             text-decoration: none;
+            cursor: pointer;
         }
         .menu-item:hover { background-color: #f9f9f9; }
-        .menu-item.sale { color: #d32f2f; font-weight: bold; }
+        
+        /* --- MENU COLOR FIX (ဒီနေရာ ပြင်ထားသည်) --- */
+        .menu-item.active { color: #d32f2f; font-weight: bold; } /* ရောက်နေတဲ့စာမျက်နှာကို အနီရောင်ပြရန် */
         
         .overlay {
             display: none;
@@ -120,10 +125,10 @@
             margin-bottom: 15px;
         }
 
-        /* --- GRID LAYOUT (ဖိနပ်စာမျက်နှာအတွက် သီးသန့်) --- */
+        /* Products Grid */
         .products-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* နှစ်ကွက်တွဲ */
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
             padding: 15px;
         }
@@ -131,10 +136,13 @@
         .product-card {
             text-align: left;
             margin-bottom: 20px;
+            cursor: pointer;
         }
+        .product-card:active { opacity: 0.8; } /* နှိပ်ရင် မှိန်သွားသည့် Effect */
+
         .p-img {
             width: 100%;
-            height: 200px; /* Grid မို့လို့ ပုံအမြင့် ညီအောင်ညှိထား */
+            height: 200px;
             object-fit: cover;
             border-radius: 4px;
         }
@@ -218,10 +226,9 @@
         <div class="close-btn" onclick="toggleMenu()">&times;</div>
         <div class="menu-header">WOMEN</div>
         <a href="index.html" class="menu-item">HOME</a>
-        <a href="sale.html" class="menu-item sale">SALE <i class="fas fa-chevron-right"></i></a>
-        <a href="new-in.html" class="menu-item">NEW IN <i class="fas fa-chevron-right"></i></a>
+        <a href="sale.html" class="menu-item">SALE <i class="fas fa-chevron-right"></i></a> <a href="new-in.html" class="menu-item">NEW IN <i class="fas fa-chevron-right"></i></a>
         <a href="clothing.html" class="menu-item">CLOTHING <i class="fas fa-chevron-right"></i></a>
-        <a href="shoes.html" class="menu-item">SHOES <i class="fas fa-chevron-right"></i></a>
+        <a href="shoes.html" class="menu-item active">SHOES <i class="fas fa-chevron-right"></i></a>
         <a href="accessories.html" class="menu-item">ACCESSORIES <i class="fas fa-chevron-right"></i></a>
     </div>
 
@@ -285,6 +292,7 @@
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.querySelector('.overlay').classList.toggle('active');
+            playClickSound(); // အသံထွက်မယ်
         }
 
         function closeAll() {
@@ -350,6 +358,39 @@
                 chatBody.scrollTop = chatBody.scrollHeight;
             }
         }
+
+        /* --- အသံထွက်သည့် စနစ် (Sound System) --- */
+        // "တောက်" အသံကို ဖန်တီးပေးမည့် Function
+        function playClickSound() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return; // Browser က မရရင် ဘာမှမလုပ်ဘူး
+            
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.type = 'sine'; // အသံလှိုင်းပုံစံ
+            osc.frequency.setValueAtTime(800, ctx.currentTime); // အသံအမြင့် (Pitch)
+            osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.1);
+            
+            gain.gain.setValueAtTime(0.1, ctx.currentTime); // အသံအတိုးအကျယ်
+            gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.1);
+
+            osc.start();
+            osc.stop(ctx.currentTime + 0.1);
+        }
+
+        // Website တစ်ခုလုံးရှိ ခလုတ်များကို လိုက်ရှာပြီး အသံထည့်ခြင်း
+        document.addEventListener('click', function(e) {
+            // Button, Link, Icon သို့မဟုတ် Product Card ကိုနှိပ်မိရင် အသံမြည်မယ်
+            if (e.target.matches('button, a, i, .menu-item, .product-card, .product-card *')) {
+                playClickSound();
+            }
+        });
+
     </script>
 
 </body>
