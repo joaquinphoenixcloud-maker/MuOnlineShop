@@ -13,7 +13,7 @@
             padding: 0;
             background-color: #fff;
             color: #2d2d2d;
-            overflow-x: hidden; /* ဘေးတိုက်မရွေ့အောင် */
+            overflow-x: hidden;
         }
 
         /* Header */
@@ -30,76 +30,77 @@
         }
 
         .logo {
-            font-size: 20px;
+            font-size: 18px; /* စာလုံးအရှည်မို့ Size နည်းနည်းလျော့ထား */
             font-weight: bold;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
 
-        .menu-icon {
-            cursor: pointer;
-            font-size: 22px;
-        }
-
         .nav-icons i {
             font-size: 20px;
-            margin-left: 20px;
+            margin-left: 15px;
             cursor: pointer;
         }
 
-        /* Side Menu (ဘေးကထွက်လာမည့် မီနူး) */
+        /* Search Bar (အစမှာ ဖျောက်ထားမည်) */
+        #searchContainer {
+            display: none;
+            background: #eee;
+            padding: 10px;
+            text-align: center;
+        }
+        #searchInput {
+            width: 90%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* Side Menu */
         .side-menu {
             height: 100%;
             width: 280px;
             position: fixed;
             z-index: 200;
             top: 0;
-            left: -280px; /* ကွယ်ထားမည် */
+            left: -280px;
             background-color: #fff;
             box-shadow: 2px 0 5px rgba(0,0,0,0.3);
             transition: 0.3s;
             padding-top: 20px;
         }
-
-        .side-menu.active {
-            left: 0; /* ပေါ်လာမည် */
-        }
-
+        .side-menu.active { left: 0; }
         .close-btn {
             position: absolute;
             top: 15px;
             right: 20px;
             font-size: 24px;
             cursor: pointer;
-            color: #333;
         }
-
         .menu-header {
             padding: 0 20px 20px 20px;
             border-bottom: 1px solid #eee;
             font-weight: bold;
             font-size: 18px;
         }
-
+        
+        /* Menu Links */
         .menu-item {
+            display: block; /* Link ဖြစ်အောင် */
             padding: 15px 20px;
             border-bottom: 1px solid #eee;
+            color: #333;
+            font-weight: 500;
+            text-decoration: none; /* မျဉ်းသား မပါအောင် */
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #333;
-            font-weight: 500;
-            cursor: pointer;
         }
-        .menu-item:hover {
-            background-color: #f9f9f9;
-        }
-        .menu-item.sale {
-            color: #d32f2f; /* Sale ကို အနီရောင်ပြ */
-            font-weight: bold;
-        }
+        .menu-item:hover { background-color: #f9f9f9; }
+        .menu-item.sale { color: #d32f2f; font-weight: bold; }
 
-        /* Overlay (နောက်ခံ မည်းသွားအောင်) */
+        /* Overlay */
         .overlay {
             display: none;
             position: fixed;
@@ -110,137 +111,285 @@
             background: rgba(0,0,0,0.5);
             z-index: 150;
         }
-        .overlay.active {
-            display: block;
-        }
+        .overlay.active { display: block; }
 
-        /* Hero Section (ပင်မပုံကြီး) */
+        /* Hero Section */
         .hero-section {
             position: relative;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
-        .hero-img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .hero-title-area {
-            text-align: left;
-            padding: 15px;
-        }
-        .hero-title {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #000;
-        }
-        .shop-now-btn {
-            float: right;
-            border: 1px solid #000;
-            background: transparent;
-            padding: 8px 15px;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 12px;
-            margin-top: -30px;
-            cursor: pointer;
-        }
+        .hero-img { width: 100%; height: auto; display: block; }
 
-        /* Products Grid */
-        .products-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* နှစ်ကော်လံ */
+        /* Slider Section */
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            padding: 0 15px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .slider-container {
+            display: flex;
+            overflow-x: auto;
             gap: 15px;
             padding: 15px;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
         }
+        .slider-container::-webkit-scrollbar { display: none; }
+
         .product-card {
+            flex: 0 0 160px;
+            scroll-snap-align: start;
             text-align: left;
-            margin-bottom: 10px;
         }
         .p-img {
             width: 100%;
-            height: 280px; /* ပုံအရှည် */
+            height: 220px;
             object-fit: cover;
-            border-radius: 2px;
+            border-radius: 4px;
         }
         .p-name {
             font-size: 13px;
             margin-top: 10px;
-            line-height: 1.4;
             color: #333;
+            height: 36px;
+            overflow: hidden;
         }
-        .p-price {
+        .p-price { font-weight: bold; margin-top: 5px; font-size: 14px; }
+
+        /* --- CHAT BOX STYLES --- */
+        .chat-box {
+            display: none; /* အစမှာ ဖျောက်ထားမည် */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        .chat-header {
+            background: #2d2d2d;
+            color: white;
+            padding: 10px;
             font-weight: bold;
-            margin-top: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-body {
+            height: 250px;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
             font-size: 14px;
+            max-width: 80%;
+        }
+        .bot-msg {
+            background: #e0e0e0;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .user-msg {
+            background: #2d2d2d;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-input-area {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+        }
+        .send-btn {
+            padding: 0 15px;
+            background: #2d2d2d;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
 
     </style>
 </head>
 <body>
 
-    <div class="overlay" onclick="toggleMenu()"></div>
+    <div class="overlay" onclick="closeAll()"></div>
 
     <header>
         <div class="menu-icon" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div class="logo">K Online</div>
+        <div class="logo">K Online Shopping</div>
         <div class="nav-icons">
-            <i class="fas fa-search"></i>
+            <i class="fas fa-search" onclick="toggleSearch()"></i>
+            <i class="fas fa-headset" onclick="toggleChat()"></i> 
             <i class="fas fa-shopping-bag"></i>
         </div>
     </header>
 
+    <div id="searchContainer">
+        <input type="text" id="searchInput" placeholder="Search products (e.g. Dress, Shoe)..." onkeyup="filterProducts()">
+    </div>
+
     <div class="side-menu" id="sideMenu">
         <div class="close-btn" onclick="toggleMenu()">&times;</div>
         <div class="menu-header">WOMEN</div>
-        
-        <div class="menu-item">HOME</div>
-        <div class="menu-item sale">SALE <i class="fas fa-chevron-right"></i></div>
-        <div class="menu-item">NEW IN <i class="fas fa-chevron-right"></i></div>
-        <div class="menu-item">CLOTHING <i class="fas fa-chevron-right"></i></div>
-        <div class="menu-item">SHOES <i class="fas fa-chevron-right"></i></div>
-        <div class="menu-item">ACCESSORIES <i class="fas fa-chevron-right"></i></div>
-        <div class="menu-item">BRANDS <i class="fas fa-chevron-right"></i></div>
+        <a href="index.html" class="menu-item">HOME</a>
+        <a href="sale.html" class="menu-item sale">SALE <i class="fas fa-chevron-right"></i></a>
+        <a href="new-in.html" class="menu-item">NEW IN <i class="fas fa-chevron-right"></i></a>
+        <a href="clothing.html" class="menu-item">CLOTHING <i class="fas fa-chevron-right"></i></a>
+        <a href="shoes.html" class="menu-item">SHOES <i class="fas fa-chevron-right"></i></a>
+        <a href="accessories.html" class="menu-item">ACCESSORIES <i class="fas fa-chevron-right"></i></a>
+    </div>
+
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header">
+            <span>Customer Service</span>
+            <i class="fas fa-times" style="cursor:pointer" onclick="toggleChat()"></i>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="message bot-msg">မင်္ဂလာပါရှင်... K Online Shopping မှ ကြိုဆိုပါတယ်။ ဘာကူညီပေးရမလဲရှင့်?</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Type a message...">
+            <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
     </div>
 
     <div class="hero-section">
-        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=600&q=80" class="hero-img" alt="Hero Image">
-        <div class="hero-title-area">
-            <div class="hero-title">The party preview</div>
-            <div class="shop-now-btn">SHOP NOW</div>
-        </div>
+        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=600&q=80" class="hero-img">
     </div>
 
-    <div class="products-grid">
+    <div class="section-title">
+        ပါတီအကြိုသုံးသပ်ချက်
+    </div>
+
+    <div class="slider-container" id="productContainer">
+        
         <div class="product-card">
             <img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=300&q=80" class="p-img">
-            <div class="p-name">Ruched & Ready removable shoulder dress</div>
+            <div class="p-name">Ruched & Ready Dress</div>
             <div class="p-price">$125.00</div>
         </div>
+
         <div class="product-card">
             <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=300&q=80" class="p-img">
-            <div class="p-name">Aria Cove sequin scoop neck fishtail</div>
+            <div class="p-name">Aria Cove Sequin Dress</div>
             <div class="p-price">$117.00</div>
         </div>
-         <div class="product-card">
+
+        <div class="product-card">
             <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=300&q=80" class="p-img">
-            <div class="p-name">ASOS DESIGN super soft sweater</div>
+            <div class="p-name">ASOS Design Sweater</div>
             <div class="p-price">$45.00</div>
         </div>
+
         <div class="product-card">
-            <img src="https://images.unsplash.com/photo-1529139574466-a302d2774d75?auto=format&fit=crop&w=300&q=80" class="p-img">
-            <div class="p-name">Monki organic cotton wide leg jeans</div>
+            <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">High Heel Shoes</div>
             <div class="p-price">$60.00</div>
         </div>
+
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1529139574466-a302d2774d75?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Fashion Accessories Bag</div>
+            <div class="p-price">$35.00</div>
+        </div>
+
     </div>
 
     <script>
+        // Menu အဖွင့်အပိတ်
         function toggleMenu() {
-            const menu = document.getElementById('sideMenu');
-            const overlay = document.querySelector('.overlay');
-            menu.classList.toggle('active');
-            overlay.classList.toggle('active');
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.querySelector('.overlay').classList.toggle('active');
+        }
+
+        // Overlay နှိပ်ရင် အကုန်ပိတ်မည်
+        function closeAll() {
+            document.getElementById('sideMenu').classList.remove('active');
+            document.querySelector('.overlay').classList.remove('active');
+        }
+
+        // Search Bar အဖွင့်အပိတ်
+        function toggleSearch() {
+            var searchBox = document.getElementById('searchContainer');
+            if (searchBox.style.display === "block") {
+                searchBox.style.display = "none";
+            } else {
+                searchBox.style.display = "block";
+                document.getElementById('searchInput').focus();
+            }
+        }
+
+        // Search Filtering (ပစ္စည်းရှာသည့်စနစ်)
+        function filterProducts() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toUpperCase();
+            var container = document.getElementById('productContainer');
+            var cards = container.getElementsByClassName('product-card');
+
+            for (var i = 0; i < cards.length; i++) {
+                var name = cards[i].getElementsByClassName('p-name')[0];
+                var txtValue = name.textContent || name.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+
+        // Chat Box အဖွင့်အပိတ်
+        function toggleChat() {
+            var chatBox = document.getElementById('chatBox');
+            if (chatBox.style.display === "block") {
+                chatBox.style.display = "none";
+            } else {
+                chatBox.style.display = "block";
+            }
+        }
+
+        // စာပို့သည့်စနစ် (Visual Only)
+        function sendMessage() {
+            var input = document.getElementById('chatInput');
+            var msg = input.value;
+            if (msg.trim() !== "") {
+                var chatBody = document.getElementById('chatBody');
+                
+                // User Message
+                var userDiv = document.createElement('div');
+                userDiv.className = 'message user-msg';
+                userDiv.textContent = msg;
+                chatBody.appendChild(userDiv);
+
+                // Auto Reply (Bot)
+                setTimeout(function() {
+                    var botDiv = document.createElement('div');
+                    botDiv.className = 'message bot-msg';
+                    botDiv.textContent = "ကျေးဇူးတင်ပါတယ်ရှင်။ Admin က ခဏနေရင် ပြန်စာပို့ပါလိမ့်မယ်။";
+                    chatBody.appendChild(botDiv);
+                    chatBody.scrollTop = chatBody.scrollHeight; // Auto Scroll to bottom
+                }, 1000);
+
+                input.value = ""; // Clear input
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
         }
     </script>
 
