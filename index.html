@@ -1,132 +1,244 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ko Ko Fashion Shop</title>
+    <title>K Online Shopping</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* အခြေခံ ဒီဇိုင်းများ */
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #fff;
+            color: #2d2d2d;
         }
 
         /* ခေါင်းစဉ်အပိုင်း (Header) */
         header {
-            background-color: #333;
+            background-color: #2d2d2d;
             color: white;
-            padding: 20px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-icons i {
+            font-size: 20px;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+        /* Menu Tab (Women/Men) */
+        .gender-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+        }
+        .gender-tab {
+            flex: 1;
             text-align: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        /* ကုန်ပစ္စည်းများ ပြသသည့်အပိုင်း */
-        .container {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        /* ကုန်ပစ္စည်း ကဒ်ပြားလေးများ */
-        .product-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             padding: 15px;
-            text-align: center;
-            transition: transform 0.3s;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 14px;
         }
-        .product-card:hover {
-            transform: translateY(-5px);
+        .gender-tab.active {
+            border-bottom: 2px solid #2d2d2d;
         }
 
-        /* ဓာတ်ပုံနေရာ */
-        .product-image {
+        /* ပရိုမိုးရှင်း ဘား */
+        .promo-banner {
+            background-color: #000;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-bottom: 10px;
+        }
+        .promo-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .promo-sub {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* အမျိုးအစား ခလုတ်များ (Categories) */
+        .category-list {
+            padding: 10px;
+        }
+
+        .cat-item {
+            background-color: #f8f8f8;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .cat-text {
+            padding-left: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+
+        .cat-img {
+            height: 100%;
+            width: 100px;
+            object-fit: cover;
+        }
+
+        /* အမည်းရောင် ခလုတ် (Sale) */
+        .cat-item.dark {
+            background-color: #000;
+            color: white;
+        }
+
+        /* Hero Section (ပုံကြီး) */
+        .hero-section {
+            position: relative;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .hero-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .hero-content {
+            padding: 20px;
+            text-align: left;
+        }
+        .hero-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .shop-btn {
+            border: 2px solid #2d2d2d;
+            background: transparent;
+            padding: 10px 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* Product Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 10px;
+        }
+        .product-card {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .p-img {
             width: 100%;
             height: 250px;
             object-fit: cover;
-            border-radius: 5px;
-            background-color: #ddd;
         }
-
-        /* စာသားနှင့် ဈေးနှုန်း */
-        .product-name {
-            font-size: 18px;
-            margin: 10px 0;
-            color: #333;
-        }
-        .price {
-            color: #e63946;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        /* ဝယ်ရန် ခလုတ် */
-        .buy-btn {
-            background-color: #333;
-            color: white;
-            border: none;
-            padding: 10px 20px;
+        .p-name {
+            font-size: 13px;
             margin-top: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
+            line-height: 1.4;
+            color: #555;
         }
-        .buy-btn:hover {
-            background-color: #555;
+        .p-price {
+            font-weight: bold;
+            margin-top: 5px;
+            font-size: 14px;
         }
 
-        /* အောက်ဆုံးစာသား (Footer) */
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #333;
-            color: white;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Ko Ko Fashion Store</h1>
-        <p>နောက်ဆုံးပေါ် ဖက်ရှင်များကို တစ်နေရာတည်းမှာ ရယူလိုက်ပါ</p>
+        <div class="menu-icon"><i class="fas fa-bars"></i></div>
+        <div class="logo">K Online Shopping</div>
+        <div class="nav-icons">
+            <i class="fas fa-search"></i>
+            <i class="fas fa-shopping-bag"></i>
+        </div>
     </header>
 
-    <div class="container">
-        <div class="product-card">
-            <img src="https://placehold.co/300x400?text=Dress+1" alt="အင်္ကျီပုံ" class="product-image">
-            <h3 class="product-name">ဒီဇိုင်းသစ် ဂါဝန်</h3>
-            <p class="price">15,000 ကျပ်</p>
-            <button class="buy-btn" onclick="alert('မှာယူလိုပါက Chat Box သို့ လာခဲ့ပေးပါရှင်')">အသေးစိတ်ကြည့်မည်</button>
+    <div class="gender-tabs">
+        <div class="gender-tab active">WOMEN</div>
+        <div class="gender-tab">MEN</div>
+    </div>
+
+    <div class="promo-banner">
+        <p class="promo-title">GET UP TO 30% OFF!</p>
+        <p class="promo-sub">Everything you need for the season</p>
+    </div>
+
+    <div class="category-list">
+        <div class="cat-item dark">
+            <span class="cat-text">SALE<br><span style="font-size:12px; font-weight:normal">Up to 60% off</span></span>
+            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=200&q=80" class="cat-img">
         </div>
 
-        <div class="product-card">
-            <img src="https://placehold.co/300x400?text=Shirt+1" alt="အင်္ကျီပုံ" class="product-image">
-            <h3 class="product-name">အမျိုးသားဝတ် ရှပ်အင်္ကျီ</h3>
-            <p class="price">12,000 ကျပ်</p>
-            <button class="buy-btn" onclick="alert('မှာယူလိုပါက Chat Box သို့ လာခဲ့ပေးပါရှင်')">အသေးစိတ်ကြည့်မည်</button>
+        <div class="cat-item">
+            <span class="cat-text">NEW IN</span>
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=200&q=80" class="cat-img">
         </div>
 
-        <div class="product-card">
-            <img src="https://placehold.co/300x400?text=T-Shirt" alt="အင်္ကျီပုံ" class="product-image">
-            <h3 class="product-name">Couple T-Shirt</h3>
-            <p class="price">8,500 ကျပ်</p>
-            <button class="buy-btn" onclick="alert('မှာယူလိုပါက Chat Box သို့ လာခဲ့ပေးပါရှင်')">အသေးစိတ်ကြည့်မည်</button>
+        <div class="cat-item">
+            <span class="cat-text">CLOTHING</span>
+            <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=200&q=80" class="cat-img">
+        </div>
+
+        <div class="cat-item">
+            <span class="cat-text">SHOES</span>
+            <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=200&q=80" class="cat-img">
         </div>
     </div>
 
-    <footer>
-        <p>Contact Us: 09-123456789 | Telegram: @kokofashion</p>
-    </footer>
+    <div class="hero-section">
+        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=600&q=80" class="hero-img" alt="Hero Image">
+        <div class="hero-content">
+            <div class="hero-title">The Party Preview</div>
+            <p>အမိုက်စား ဒီဇိုင်းသစ်များ ရောက်ရှိနေပါပြီ။</p>
+            <div class="shop-btn">SHOP NOW</div>
+        </div>
+    </div>
+
+    <div class="products-grid">
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Ruched & Ready removable shoulder dress</div>
+            <div class="p-price">$125.00</div>
+        </div>
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Aria Cove sequin scoop neck fishtail</div>
+            <div class="p-price">$117.00</div>
+        </div>
+    </div>
 
 </body>
 </html>
