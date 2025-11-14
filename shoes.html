@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoes - K Online Shopping</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Basic Settings */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #2d2d2d;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background-color: #2d2d2d;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-icons i {
+            font-size: 20px;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+
+        /* Search Bar */
+        #searchContainer {
+            display: none;
+            background: #eee;
+            padding: 10px;
+            text-align: center;
+        }
+        #searchInput {
+            width: 90%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* Side Menu */
+        .side-menu {
+            height: 100%;
+            width: 280px;
+            position: fixed;
+            z-index: 200;
+            top: 0;
+            left: -280px;
+            background-color: #fff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+            transition: 0.3s;
+            padding-top: 20px;
+        }
+        .side-menu.active { left: 0; }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .menu-header {
+            padding: 0 20px 20px 20px;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .menu-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #333;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .menu-item:hover { background-color: #f9f9f9; }
+        .menu-item.sale { color: #d32f2f; font-weight: bold; }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 150;
+        }
+        .overlay.active { display: block; }
+
+        /* Page Title */
+        .page-title {
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+
+        /* --- GRID LAYOUT (ဖိနပ်စာမျက်နှာအတွက် သီးသန့်) --- */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* နှစ်ကွက်တွဲ */
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .product-card {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .p-img {
+            width: 100%;
+            height: 200px; /* Grid မို့လို့ ပုံအမြင့် ညီအောင်ညှိထား */
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .p-name {
+            font-size: 13px;
+            margin-top: 10px;
+            line-height: 1.4;
+            color: #333;
+        }
+        .p-price {
+            font-weight: bold;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        /* Chat Box Styles */
+        .chat-box {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+        .chat-header {
+            background: #2d2d2d;
+            color: white;
+            padding: 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-body {
+            height: 250px;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            max-width: 80%;
+        }
+        .bot-msg { background: #e0e0e0; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .user-msg { background: #2d2d2d; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-input-area { display: flex; border-top: 1px solid #ddd; }
+        .chat-input { flex: 1; padding: 10px; border: none; outline: none; }
+        .send-btn { padding: 0 15px; background: #2d2d2d; color: white; border: none; cursor: pointer; }
+
+    </style>
+</head>
+<body>
+
+    <div class="overlay" onclick="closeAll()"></div>
+
+    <header>
+        <div class="menu-icon" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <div class="logo">K Online</div>
+        <div class="nav-icons">
+            <i class="fas fa-search" onclick="toggleSearch()"></i>
+            <i class="fas fa-headset" onclick="toggleChat()"></i> 
+            <i class="fas fa-shopping-bag"></i>
+        </div>
+    </header>
+
+    <div id="searchContainer">
+        <input type="text" id="searchInput" placeholder="Search shoes..." onkeyup="filterProducts()">
+    </div>
+
+    <div class="side-menu" id="sideMenu">
+        <div class="close-btn" onclick="toggleMenu()">&times;</div>
+        <div class="menu-header">WOMEN</div>
+        <a href="index.html" class="menu-item">HOME</a>
+        <a href="sale.html" class="menu-item sale">SALE <i class="fas fa-chevron-right"></i></a>
+        <a href="new-in.html" class="menu-item">NEW IN <i class="fas fa-chevron-right"></i></a>
+        <a href="clothing.html" class="menu-item">CLOTHING <i class="fas fa-chevron-right"></i></a>
+        <a href="shoes.html" class="menu-item">SHOES <i class="fas fa-chevron-right"></i></a>
+        <a href="accessories.html" class="menu-item">ACCESSORIES <i class="fas fa-chevron-right"></i></a>
+    </div>
+
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header">
+            <span>Customer Service</span>
+            <i class="fas fa-times" style="cursor:pointer" onclick="toggleChat()"></i>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="message bot-msg">မင်္ဂလာပါရှင်... K Online Shoe Shop မှ ကြိုဆိုပါတယ်။ ဖိနပ် ဆိုဒ်/ဒီဇိုင်း မေးမြန်းနိုင်ပါတယ်ရှင်။</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Type a message...">
+            <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="page-title">SHOES COLLECTION</div>
+
+    <div class="products-grid" id="productContainer">
+        
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Blue High Heels</div>
+            <div class="p-price">45,000 Ks</div>
+        </div>
+
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1560343076-ec342d67ffc9?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Black Leather Boots</div>
+            <div class="p-price">60,000 Ks</div>
+        </div>
+
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Nike Sneakers White</div>
+            <div class="p-price">85,000 Ks</div>
+        </div>
+
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1515347619252-60a6bf4fffce?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Casual Summer Sandals</div>
+            <div class="p-price">25,000 Ks</div>
+        </div>
+        
+         <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Fashion Boots</div>
+            <div class="p-price">55,000 Ks</div>
+        </div>
+
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Sport Running Shoes</div>
+            <div class="p-price">40,000 Ks</div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.querySelector('.overlay').classList.toggle('active');
+        }
+
+        function closeAll() {
+            document.getElementById('sideMenu').classList.remove('active');
+            document.querySelector('.overlay').classList.remove('active');
+        }
+
+        function toggleSearch() {
+            var searchBox = document.getElementById('searchContainer');
+            if (searchBox.style.display === "block") {
+                searchBox.style.display = "none";
+            } else {
+                searchBox.style.display = "block";
+                document.getElementById('searchInput').focus();
+            }
+        }
+
+        function filterProducts() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toUpperCase();
+            var container = document.getElementById('productContainer');
+            var cards = container.getElementsByClassName('product-card');
+
+            for (var i = 0; i < cards.length; i++) {
+                var name = cards[i].getElementsByClassName('p-name')[0];
+                var txtValue = name.textContent || name.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+
+        function toggleChat() {
+            var chatBox = document.getElementById('chatBox');
+            if (chatBox.style.display === "block") {
+                chatBox.style.display = "none";
+            } else {
+                chatBox.style.display = "block";
+            }
+        }
+
+        function sendMessage() {
+            var input = document.getElementById('chatInput');
+            var msg = input.value;
+            if (msg.trim() !== "") {
+                var chatBody = document.getElementById('chatBody');
+                var userDiv = document.createElement('div');
+                userDiv.className = 'message user-msg';
+                userDiv.textContent = msg;
+                chatBody.appendChild(userDiv);
+
+                setTimeout(function() {
+                    var botDiv = document.createElement('div');
+                    botDiv.className = 'message bot-msg';
+                    botDiv.textContent = "ကျေးဇူးတင်ပါတယ်ရှင်။ Admin မှ ပြန်လည်ဆက်သွယ်ပေးပါမယ်။";
+                    chatBody.appendChild(botDiv);
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                }, 1000);
+
+                input.value = "";
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        }
+    </script>
+
+</body>
+</html>
