@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clothing - K Online Shopping</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- THEME COLORS (index.html နှင့်တူအောင် ညှိထားသည်) --- */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #2d2d2d;
+            --header-bg: #2d2d2d;
+            --header-text: #ffffff;
+            --card-bg: #ffffff;
+            --menu-bg: #ffffff;
+            --border-color: #eeeeee;
+            --footer-bg: #ffffff;
+            --input-bg: #eeeeee;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --header-bg: #000000;
+            --header-text: #ffffff;
+            --card-bg: #1e1e1e;
+            --menu-bg: #1e1e1e;
+            --border-color: #333333;
+            --footer-bg: #121212;
+            --input-bg: #333333;
+        }
+
+        /* Basic Settings */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-icons i {
+            font-size: 20px;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+
+        /* Search Bar */
+        #searchContainer {
+            display: none;
+            background: var(--bg-color);
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        #searchInput {
+            width: 90%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* Side Menu */
+        .side-menu {
+            height: 100%;
+            width: 280px;
+            position: fixed;
+            z-index: 200;
+            top: 0;
+            left: -280px;
+            background-color: var(--menu-bg);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+            transition: left 0.3s, background-color 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .side-menu.active { left: 0; }
+        
+        .menu-top { flex: 1; padding-top: 20px; }
+        .menu-bottom { 
+            padding: 20px; 
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        .menu-header {
+            padding: 0 20px 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .menu-item:hover { opacity: 0.7; }
+        
+        /* Highlight Active Page */
+        .menu-item.active { color: #d32f2f; font-weight: bold; }
+
+        /* Settings Icons */
+        .setting-icon {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+            text-align: center;
+        }
+        .setting-label {
+            font-size: 10px;
+            display: block;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 150;
+        }
+        .overlay.active { display: block; }
+
+        /* Page Title */
+        .page-title {
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .product-card {
+            text-align: left;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: var(--card-bg);
+            padding-bottom: 10px;
+            border-radius: 4px;
+        }
+        .p-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .p-name {
+            font-size: 13px;
+            margin-top: 10px;
+            line-height: 1.4;
+            color: var(--text-color);
+        }
+        .p-price {
+            font-weight: bold;
+            margin-top: 5px;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        /* Chat Box */
+        .chat-box {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .chat-header { background: var(--header-bg); color: var(--header-text); padding: 10px; display: flex; justify-content: space-between;}
+        .chat-body { height: 200px; padding: 10px; overflow-y: auto; background: var(--bg-color); }
+        .chat-input-area { display: flex; border-top: 1px solid var(--border-color); }
+        .chat-input { flex: 1; padding: 10px; border: none; background: var(--input-bg); color: var(--text-color); outline: none; }
+        .send-btn { padding: 0 15px; background: var(--header-bg); color: var(--header-text); border: none; }
+
+    </style>
+</head>
+<body>
+
+    <div class="overlay" onclick="closeAll()"></div>
+
+    <header>
+        <div class="menu-icon" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <div class="logo">K Online</div>
+        <div class="nav-icons">
+            <i class="fas fa-search" onclick="toggleSearch()"></i>
+            <i class="fas fa-headset" onclick="toggleChat()"></i> 
+            <i class="fas fa-shopping-bag"></i>
+        </div>
+    </header>
+
+    <div id="searchContainer">
+        <input type="text" id="searchInput" data-lang-placeholder="search_ph" placeholder="Search clothing..." onkeyup="filterProducts()">
+    </div>
+
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-top">
+            <div class="close-btn" onclick="toggleMenu()">&times;</div>
+            <div class="menu-header" data-lang-key="women">WOMEN</div>
+            <a href="index.html" class="menu-item"><span data-lang-key="home">HOME</span></a>
+            <a href="sale.html" class="menu-item"><span data-lang-key="sale">SALE</span> <i class="fas fa-chevron-right"></i></a>
+            <a href="new-in.html" class="menu-item"><span data-lang-key="new_in">NEW IN</span> <i class="fas fa-chevron-right"></i></a>
+            <a href="clothing.html" class="menu-item active"><span data-lang-key="clothing">CLOTHING</span> <i class="fas fa-chevron-right"></i></a>
+            <a href="shoes.html" class="menu-item"><span data-lang-key="shoes">SHOES</span> <i class="fas fa-chevron-right"></i></a>
+            <a href="accessories.html" class="menu-item"><span data-lang-key="accessories">ACCESSORIES</span> <i class="fas fa-chevron-right"></i></a>
+        </div>
+
+        <div class="menu-bottom">
+            <div class="setting-icon" onclick="toggleLanguage()">
+                <i class="fas fa-globe"></i>
+                <span class="setting-label" id="langLabel">EN</span>
+            </div>
+            <div class="setting-icon" onclick="toggleTheme()">
+                <i class="fas fa-moon" id="themeIcon"></i>
+                <span class="setting-label" id="themeLabel">DARK</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header">
+            <span data-lang-key="cust_service">Customer Service</span>
+            <i class="fas fa-times" style="cursor:pointer" onclick="toggleChat()"></i>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="message" style="background:#eee; padding:8px; border-radius:5px; font-size:14px; color:#333;" data-lang-key="welcome_clothing">မင်္ဂလာပါ... အဝတ်အစား ဆိုဒ်/ဒီဇိုင်း မေးမြန်းနိုင်ပါတယ်ရှင်။</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="...">
+            <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="page-title" data-lang-key="clothing_collection">CLOTHING COLLECTION</div>
+
+    <div class="products-grid" id="productContainer">
+        
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Ruched Detail Green Dress</div>
+            <div class="p-price">40,000 Ks</div>
+        </div>
+
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Winter Collection Sweater</div>
+            <div class="p-price">35,000 Ks</div>
+        </div>
+
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1551163943-3f6a29e39426?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Casual White Tee</div>
+            <div class="p-price">15,000 Ks</div>
+        </div>
+
+        <div class="product-card">
+            <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <div class="p-name">Elegant Evening Gown</div>
+            <div class="p-price">80,000 Ks</div>
+        </div>
+    </div>
+
+    <script>
+        /* --- SOUND SYSTEM --- */
+        function playClickSound() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.05);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.05);
+        }
+        document.addEventListener('click', () => playClickSound());
+
+        /* --- LANGUAGE SYSTEM --- */
+        let currentLang = 'en';
+        const translations = {
+            en: {
+                women: "WOMEN", home: "HOME", sale: "SALE", new_in: "NEW IN",
+                clothing: "CLOTHING", shoes: "SHOES", accessories: "ACCESSORIES",
+                cust_service: "Customer Service", welcome_clothing: "Hello! Ask us about clothing sizes & designs.",
+                clothing_collection: "CLOTHING COLLECTION", search_ph: "Search clothing..."
+            },
+            my: {
+                women: "အမျိုးသမီး", home: "ပင်မစာမျက်နှာ", sale: "လျှော့ဈေး", new_in: "ပစ္စည်းအသစ်များ",
+                clothing: "အဝတ်အထည်", shoes: "ဖိနပ်များ", accessories: "အသုံးအဆောင်များ",
+                cust_service: "သုံးစွဲသူ ဝန်ဆောင်မှု", welcome_clothing: "မင်္ဂလာပါ... အဝတ်အစား ဆိုဒ်/ဒီဇိုင်း မေးမြန်းနိုင်ပါတယ်ရှင်။",
+                clothing_collection: "အဝတ်အထည် ကော်လက်ရှင်", search_ph: "အဝတ်အစား ရှာရန်..."
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = (currentLang === 'en') ? 'my' : 'en';
+            document.getElementById('langLabel').innerText = currentLang.toUpperCase();
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.getAttribute('data-lang-key');
+                if(translations[currentLang][key]) el.innerText = translations[currentLang][key];
+            });
+            document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-lang-placeholder');
+                if(translations[currentLang][key]) el.placeholder = translations[currentLang][key];
+            });
+        }
+
+        /* --- DARK MODE SYSTEM --- */
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            if (isDark) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                label.innerText = "LIGHT";
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                label.innerText = "DARK";
+            }
+        }
+
+        /* --- STANDARD FUNCTIONS --- */
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.querySelector('.overlay').classList.toggle('active');
+        }
+        function closeAll() {
+            document.getElementById('sideMenu').classList.remove('active');
+            document.querySelector('.overlay').classList.remove('active');
+        }
+        function toggleSearch() {
+            const box = document.getElementById('searchContainer');
+            box.style.display = (box.style.display === "block") ? "none" : "block";
+        }
+        function toggleChat() {
+            const box = document.getElementById('chatBox');
+            box.style.display = (box.style.display === "block") ? "none" : "block";
+        }
+        function filterProducts() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toUpperCase();
+            var container = document.getElementById('productContainer');
+            var cards = container.getElementsByClassName('product-card');
+            for (var i = 0; i < cards.length; i++) {
+                var name = cards[i].getElementsByClassName('p-name')[0];
+                if (name.innerText.toUpperCase().indexOf(filter) > -1) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+
+</body>
+          </html>
+          
