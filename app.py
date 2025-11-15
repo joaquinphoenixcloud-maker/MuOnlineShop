@@ -4,7 +4,7 @@ import asyncio  # Async function တွေကို run ဖို့
 from flask import Flask, render_template, jsonify, request
 import bot  # bot.py ဖိုင်ကို import လုပ်ခြင်း
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, DictPersistence
 
 app = Flask(__name__)
 
@@ -16,7 +16,7 @@ APP_URL = os.environ.get('APP_URL') # Website လိပ်စာ (အသစ်�
 # --- Telegram Bot Application ကို တည်ဆောက်ခြင်း ---
 if TOKEN:
     # Bot Application ကို ဒီမှာ တည်ဆောက်ထားမယ်
-    persistence = None # persistence မသုံးတော့ပါ
+    persistence = DictPersistence() # Memory persistence
     application = Application.builder().token(TOKEN).persistence(persistence).build()
     
     # bot.py ထဲက function တွေကို ဒီမှာ ချိတ်ပေးမယ်
@@ -119,4 +119,3 @@ def get_products():
     except Exception as e:
         print(f"[App Error] Get Products API Error: {e}")
     return jsonify(product_list)
-
