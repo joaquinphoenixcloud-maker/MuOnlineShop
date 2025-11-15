@@ -3,8 +3,8 @@ import psycopg2
 import requests
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-# --- .persistence(None) ထည့်ဖို့ import လုပ်မယ် ---
-from telegram.ext import PicklePersistence 
+# --- Persistence Error ရှင်းဖို့ DictPersistence ကို import လုပ်မယ် ---
+from telegram.ext import DictPersistence 
 
 # --- Render Environment ကနေ Key တွေကို ဆွဲယူပါမယ် ---
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
@@ -17,7 +17,7 @@ IMGBB_UPLOAD_URL = "https://api.imgbb.com/1/upload"
 # Start Command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "မင်္ဂလာပါ ကိုကို... Persistence (None) စနစ် အဆင်သင့်ပါ။\n\n"
+        "မင်္ဂလာပါ ကိုကို... (Final Fix: DictPersistence) အဆင်သင့်ပါ။\n\n"
         "ပုံစံ: နာမည်, ဈေးနှုန်း, အမျိုးအစား"
     )
 
@@ -87,11 +87,12 @@ def run_bot():
         return
 
     try:
-        print("--- Bot background thread is starting (Persistence=None)... ---")
+        print("--- Bot background thread is starting (Persistence=DictPersistence)... ---")
         
-        # --- ဒီနေရာမှာ .persistence(None) ကို ထည့်လိုက်ပါတယ် ---
-        # ဒါမှ Render Server မှာ ယာယီဖိုင် Error မတက်တော့မှာပါ
-        app = Application.builder().token(TOKEN).persistence(None).build()
+        # --- ဒီနေရာမှာ .persistence(DictPersistence()) ကို ပြောင်းလိုက်ပါတယ် ---
+        # ဒါက Error ကို ဖြေရှင်းပေးပါလိမ့်မယ်
+        persistence = DictPersistence()
+        app = Application.builder().token(TOKEN).persistence(persistence).build()
         # ----------------------------------------------------
         
         app.add_handler(CommandHandler("start", start))
