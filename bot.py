@@ -83,4 +83,4 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         print(f"[Bot Error] Database Insert Error: {e}")
         await update.message.reply_text(f"❌ Database Error: {e}")
-
+        
