@@ -2,9 +2,7 @@ import os
 import psycopg2
 import requests
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-# --- Persistence Error ရှင်းဖို့ DictPersistence ကို import လုပ်မယ် ---
-from telegram.ext import DictPersistence 
+from telegram.ext import ContextTypes
 
 # --- Render Environment ကနေ Key တွေကို ဆွဲယူပါမယ် ---
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
@@ -17,7 +15,7 @@ IMGBB_UPLOAD_URL = "https://api.imgbb.com/1/upload"
 # Start Command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "မင်္ဂလာပါ ကိုကို... (Final Fix: DictPersistence) အဆင်သင့်ပါ။\n\n"
+        "မင်္ဂလာပါ ကိုကို... (Webhook စနစ်) အဆင်သင့်ပါ။\n\n"
         "ပုံစံ: နာမည်, ဈေးနှုန်း, အမျိုးအစား"
     )
 
@@ -40,6 +38,12 @@ async def upload_to_imgbb(photo_bytes):
 
 # ပုံနဲ့ စာ လက်ခံမယ့် Function
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Key တွေ ရှိမရှိ အရင်စစ်မယ်
+    if not all([TOKEN, DATABASE_URL, IMGBB_API_KEY]):
+        print("---!!! BOT ERROR: Environment Variables တွေ အကုန်မပြည့်စုံပါ။ ---!!!")
+        await update.message.reply_text("❌ Server Error: Key တွေ မပြည့်စုံပါ။")
+        return
+
     caption = update.message.caption
     if not caption or "," not in caption:
         await update.message.reply_text("⚠️ ပုံစံမှားနေပါတယ်။ (Name, Price, Category)")
@@ -79,27 +83,4 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         print(f"[Bot Error] Database Insert Error: {e}")
         await update.message.reply_text(f"❌ Database Error: {e}")
-
-# app.py က ခေါ် run မယ့် ပင်မ Function
-def run_bot():
-    if not all([TOKEN, DATABASE_URL, IMGBB_API_KEY]):
-        print("---!!! BOT ERROR: Environment Variables တွေ အကုန်မပြည့်စုံလို့ Bot ကို မ run နိုင်ပါ။ ---!!!")
-        return
-
-    try:
-        print("--- Bot background thread is starting (Persistence=DictPersistence)... ---")
-        
-        # --- ဒီနေရာမှာ .persistence(DictPersistence()) ကို ပြောင်းလိုက်ပါတယ် ---
-        # ဒါက Error ကို ဖြေရှင်းပေးပါလိမ့်မယ်
-        persistence = DictPersistence()
-        app = Application.builder().token(TOKEN).persistence(persistence).build()
-        # ----------------------------------------------------
-        
-        app.add_handler(CommandHandler("start", start))
-        app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
-        
-        print("--- Bot is now polling. ---")
-        app.run_polling()
-    except Exception as e:
-        print(f"---!!! BOT CRASHED: {e} ---!!!")
 
