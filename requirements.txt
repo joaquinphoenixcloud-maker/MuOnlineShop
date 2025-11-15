@@ -2,3 +2,4 @@ flask
 python-telegram-bot
 gunicorn
 psycopg2-binary
+requests
