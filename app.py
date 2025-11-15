@@ -1,16 +1,31 @@
 import os
 import psycopg2
-import threading  # Bot ကို နောက်ကွယ်မှာ run ဖို့
-from flask import Flask, render_template, jsonify
-
-# --- bot.py ဖိုင်ထဲက Function တွေကို ခေါ်သုံးဖို့ ---
-import bot 
+import asyncio  # Async function တွေကို run ဖို့
+from flask import Flask, render_template, jsonify, request
+import bot  # bot.py ဖိုင်ကို import လုပ်ခြင်း
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 app = Flask(__name__)
 
-# --- Database Setup (အရင်အတိုင်း) ---
+# --- Environment Keys များကို ယူခြင်း ---
+TOKEN = os.environ.get('TELEGRAM_TOKEN')
 DATABASE_URL = os.environ.get('DATABASE_URL')
+APP_URL = os.environ.get('APP_URL') # Website လိပ်စာ (အသစ်ထည့်ရမယ်)
 
+# --- Telegram Bot Application ကို တည်ဆောက်ခြင်း ---
+if TOKEN:
+    # Bot Application ကို ဒီမှာ တည်ဆောက်ထားမယ်
+    persistence = None # persistence မသုံးတော့ပါ
+    application = Application.builder().token(TOKEN).persistence(persistence).build()
+    
+    # bot.py ထဲက function တွေကို ဒီမှာ ချိတ်ပေးမယ်
+    application.add_handler(CommandHandler("start", bot.start))
+    application.add_handler(MessageHandler(filters.PHOTO, bot.handle_photo))
+else:
+    print("---!!! APP ERROR: TELEGRAM_TOKEN မရှိလို့ Bot ကို မ run နိုင်ပါ။ ---!!!")
+
+# --- Database Setup (အရင်အတိုင်း) ---
 def get_db_connection():
     try:
         conn = psycopg2.connect(DATABASE_URL)
@@ -40,25 +55,52 @@ if DATABASE_URL:
     init_db()
 # --------------------------------------
 
-# --- Website Routes (HTML စာမျက်နှာတွေ) ---
+# --- Webhook Route (Telegram က ဒီကို လှမ်းပစ်မှာပါ) ---
+@app.route(f"/{TOKEN}", methods=['POST'])
+def telegram_webhook():
+    if request.is_json:
+        update_data = request.get_json(force=True)
+        update = Update.de_json(update_data, application.bot)
+        
+        # Flask (Sync) ပေါ်မှာ Telegram (Async) ကို run ဖို့
+        asyncio.run(application.process_update(update))
+        print(f"--- Webhook received and processed for user {update.effective_user.id} ---")
+        return "ok", 200
+    else:
+        return "Bad Request", 400
+
+# --- Webhook ကို တစ်ခါပဲ Register လုပ်မယ့် Route ---
+@app.route('/set_webhook')
+def set_webhook():
+    if not APP_URL or not TOKEN:
+        return "Error: APP_URL or TOKEN Environment Variable မရှိပါ။", 500
+        
+    webhook_url = f"{APP_URL}/{TOKEN}"
+    success = asyncio.run(application.bot.set_webhook(url=webhook_url))
+    
+    if success:
+        print(f"--- Webhook set successfully to {webhook_url} ---")
+        return f"Webhook set to {webhook_url}", 200
+    else:
+        print("--- Webhook setup failed. ---")
+        return "Webhook setup failed.", 500
+# --------------------------------------
+
+# --- Website Routes (အရင်အတိုင်း) ---
 @app.route('/')
 def home():
     return render_template('index.html')
 
 @app.route('/<page_name>')
 def show_page(page_name):
-    # .html မပါဘဲ ခေါ်မိရင်
     if not page_name.endswith('.html'):
         page_name += '.html'
-        
-    # Security အတွက် ကိုကို့မှာ ရှိတဲ့ ဖိုင်နာမည်တွေကိုပဲ ဖွင့်ပေးမယ်
     safe_pages = ['index.html', 'shoes.html', 'clothing.html', 'accessories.html']
     if page_name in safe_pages:
         return render_template(page_name)
     else:
         return "Page Not Found", 404
 
-# --- API Route (Database က ပစ္စည်းတွေ ပြန်ပို့ပေးဖို့) ---
 @app.route('/api/products')
 def get_products():
     product_list = []
@@ -70,26 +112,11 @@ def get_products():
             products = cur.fetchall()
             cur.close()
             conn.close()
-            
             for p in products:
                 product_list.append({
                     "id": p[0], "name": p[1], "price": p[2], "category": p[3], "image": p[4]
                 })
     except Exception as e:
         print(f"[App Error] Get Products API Error: {e}")
-        
     return jsonify(product_list)
-# --------------------------------------
-
-# --- Bot ကို Background Thread အဖြစ် စတင်ခြင်း ---
-# Gunicorn က ဒီဖိုင်ကို run တာနဲ့ Bot လည်း အတူတူ စ run မယ်
-print("--- Starting background bot thread... ---")
-bot_thread = threading.Thread(target=bot.run_bot)
-bot_thread.daemon = True  # Main app ရပ်ရင် Bot ပါ အတူရပ်မယ်
-bot_thread.start()
-# --------------------------------------
-
-if __name__ == '__main__':
-    # ဒါက Local မှာ run ရင် သုံးဖို့
-    app.run(port=5000, debug=True)
 
