@@ -3,6 +3,8 @@ import psycopg2
 import requests
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+# --- .persistence(None) ထည့်ဖို့ import လုပ်မယ် ---
+from telegram.ext import PicklePersistence 
 
 # --- Render Environment ကနေ Key တွေကို ဆွဲယူပါမယ် ---
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
@@ -15,7 +17,7 @@ IMGBB_UPLOAD_URL = "https://api.imgbb.com/1/upload"
 # Start Command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "မင်္ဂလာပါ ကိုကို... ImgBB + Threading စနစ် အဆင်သင့်ပါ။\n\n"
+        "မင်္ဂလာပါ ကိုကို... Persistence (None) စနစ် အဆင်သင့်ပါ။\n\n"
         "ပုံစံ: နာမည်, ဈေးနှုန်း, အမျိုးအစား"
     )
 
@@ -51,7 +53,6 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name, price, category = parts[0], parts[1], parts[2].lower()
 
     try:
-        # ၁။ Telegram က ပုံကို Download ဆွဲမယ်
         photo_file = await update.message.photo[-1].get_file()
         photo_bytes = await photo_file.download_as_bytearray()
     except Exception as e:
@@ -59,14 +60,12 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ ပုံကို Download ဆွဲလို့မရပါ။")
         return
 
-    # ၂။ ပုံကို ImgBB ပေါ် တင်မယ်
     web_image_path = await upload_to_imgbb(photo_bytes)
     
     if not web_image_path:
         await update.message.reply_text("❌ ပုံကို ImgBB ပေါ် တင်မရ ဖြစ်နေပါတယ် ကိုကို။")
         return
 
-    # ၃။ ImgBB Link ကို Database ထဲ သိမ်းမယ်
     try:
         conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
@@ -88,8 +87,12 @@ def run_bot():
         return
 
     try:
-        print("--- Bot background thread is starting... ---")
-        app = Application.builder().token(TOKEN).build()
+        print("--- Bot background thread is starting (Persistence=None)... ---")
+        
+        # --- ဒီနေရာမှာ .persistence(None) ကို ထည့်လိုက်ပါတယ် ---
+        # ဒါမှ Render Server မှာ ယာယီဖိုင် Error မတက်တော့မှာပါ
+        app = Application.builder().token(TOKEN).persistence(None).build()
+        # ----------------------------------------------------
         
         app.add_handler(CommandHandler("start", start))
         app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
@@ -98,4 +101,4 @@ def run_bot():
         app.run_polling()
     except Exception as e:
         print(f"---!!! BOT CRASHED: {e} ---!!!")
-        
+
