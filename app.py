@@ -10,10 +10,8 @@ from wtforms import form, fields, validators
 
 # --- Environment Keys များကို ယူခြင်း ---
 DATABASE_URL = os.environ.get('DATABASE_URL')
-# Flask-Login အတွက် လျှို့ဝှက် Key (အသစ်ထည့်ရမယ်)
 SECRET_KEY = os.environ.get('SECRET_KEY') 
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
-# ကိုကို့ Telegram ID (Bot က Order ပို့ဖို့)
 TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID') 
 
 # --- App နှင့် Database တည်ဆောက်ခြင်း ---
@@ -52,8 +50,6 @@ class Order(db.Model):
     is_delivered = db.Column(db.Boolean, default=False)
 
 # --- Admin Panel Setup ---
-
-# Login မဝင်ထားရင် Admin Panel ကို ဝင်မရအောင် ကာကွယ်ခြင်း
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
         return current_user.is_authenticated
@@ -66,21 +62,16 @@ class ProtectedModelView(ModelView):
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('login', next=request.url))
 
-# Product ဇယားကို Admin Panel မှာ ပြင်လို့ရအောင် ထည့်ခြင်း
 class ProductAdminView(ProtectedModelView):
-    column_searchable_list = ('name', 'category') # Search လုပ်လို့ရအောင်
-    column_filters = ('category',) # Filter ခွဲလို့ရအောင်
+    column_searchable_list = ('name', 'category')
+    column_filters = ('category',)
 
-# Order ဇယားကို Admin Panel မှာ ကြည့်လို့ရအောင် ထည့်ခြင်း
 class OrderAdminView(ProtectedModelView):
     column_list = ('id', 'customer_name', 'phone_number', 'items', 'receipt_image_url', 'is_delivered')
-    can_create = False # Admin က Order အသစ် မဖန်တီးနိုင်၊ ကြည့်ရုံပဲ
+    can_create = False
 
-# User (Admin) ဇယားကို Admin Panel မှာ ပြင်လို့ရအောင် ထည့်ခြင်း
 class UserAdminView(ProtectedModelView):
-    # Password Hash ကို Admin Panel မှာ မပြအောင် ဖွက်ထားမယ်
     form_excluded_columns = ('password_hash',)
-    # User အသစ်ဆောက်ရင် Password ကို hash လုပ်မယ်
     def on_model_change(self, form, model, is_created):
         if form.password.data:
             model.set_password(form.password.data)
@@ -94,25 +85,22 @@ class LoginForm(form.Form):
 def create_app():
     app = Flask(__name__)
     
-    # Render Environment က Key တွေကို App ထဲ ထည့်ခြင်း
     app.config['SECRET_KEY'] = SECRET_KEY
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
     
-    # Database (db) နှင့် LoginManager ကို App နှင့် ချိတ်ဆက်ခြင်း
     db.init_app(app)
     login_manager.init_app(app)
     
-    # Admin Panel ကို App နှင့် ချိတ်ဆက်ခြင်း
     admin = Admin(app, name='K Online Admin', template_mode='bootstrap4', index_view=MyAdminIndexView())
     admin.add_view(ProductAdminView(Product, db.session))
     admin.add_view(OrderAdminView(Order, db.session))
     admin.add_view(UserAdminView(User, db.session))
 
-    # --- Login Routes (Admin ဝင်ဖို့) ---
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(User, int(user_id))
 
+    # --- Login Routes (Admin ဝင်ဖို့) ---
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         form = LoginForm(request.form)
@@ -122,7 +110,7 @@ def create_app():
                 login_user(user)
                 return redirect(url_for('admin.index'))
             flash('Invalid username or password')
-        return render_template('login.html', form=form) # login.html လိုမယ်
+        return render_template('login.html', form=form)
 
     @app.route('/logout')
     def logout():
@@ -150,15 +138,29 @@ def create_app():
         ]
         return jsonify(product_list)
 
-    # --- Order တင်ရင် Bot ကို လှမ်းပို့မယ့် Route (အနာဂတ်အတွက်) ---
     @app.route('/submit_order', methods=['POST'])
     def submit_order():
-        # ဒီနေရာမှာ Customer က ပို့လိုက်တဲ့ Order နဲ့ ပြေစာပုံကို လက်ခံပြီး
-        # Database (Order ဇယား) ထဲ ထည့်မယ်
-        # ပြီးရင် Telegram Bot ကနေ ကိုကို့ဆီကို "Order တက်ပါတယ်" လို့ ပို့ခိုင်းမယ်
         # (ဒါက နောက်တစ်ဆင့်မှ ဆက်လုပ်ပါမယ်)
         return "Order Received (Bot function not yet built)", 200
-
+        
+    # --- !!! အဆင့်သစ် - လျှို့ဝှက် Admin Account ဆောက်မယ့် Link !!! ---
+    @app.route('/create_first_admin_123xyz')
+    def create_first_admin():
+        try:
+            # User ဇယားထဲမှာ admin ရှိ၊ မရှိ အရင်စစ်မယ်
+            user_exists = db.session.query(User).filter_by(username='admin').first()
+            if not user_exists:
+                # မရှိမှ အသစ်ဆောက်မယ်
+                u = User(username='admin')
+                u.set_password('12345') # Password ကို 12345 လို့ ပေးထားတယ်
+                db.session.add(u)
+                db.session.commit()
+                return "<h1>Admin User (admin) Created Successfully!</h1>"
+            else:
+                return "<h1>Admin User already exists.</h1>"
+        except Exception as e:
+            return f"<h1>Error creating admin: {e}</h1>"
+            
     print("--- Flask App created successfully with Admin Panel. ---")
     return app
 
@@ -166,7 +168,6 @@ def create_app():
 app = create_app()
 
 # --- Database Tables တွေကို အလိုအလျောက် ဆောက်ပေးဖို့ ---
-# (Server စ run တိုင်း ဇယားတွေ ရှိမရှိ စစ်ပေးပါလိမ့်မယ်)
 with app.app_context():
     db.create_all()
 
