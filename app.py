@@ -4,9 +4,14 @@ import asyncio
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView, ModelView
+# --- UserMixin က ဒီထဲမှာ ရှိတာ မှန်ပါတယ် ---
 from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from wtforms import form, fields, validators
+# --- wtforms Import အမှားကို ဒီမှာ ပြင်ထားပါတယ် ---
+from wtforms import Form as WtformsForm  # 'form' အသေး မဟုတ်ပါ
+from wtforms import StringField, PasswordField # 'fields' မဟုတ်ပါ
+from wtforms import validators
+# ------------------------------------------
 
 # --- Environment Keys များကို ယူခြင်း ---
 DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -73,13 +78,13 @@ class OrderAdminView(ProtectedModelView):
 class UserAdminView(ProtectedModelView):
     form_excluded_columns = ('password_hash',)
     def on_model_change(self, form, model, is_created):
-        if form.password.data:
+        if hasattr(form, 'password') and form.password.data:
             model.set_password(form.password.data)
 
-# --- Login Form တည်ဆောက်ခြင်း ---
-class LoginForm(form.Form):
-    username = fields.StringField(validators=[validators.InputRequired()])
-    password = fields.PasswordField(validators=[validators.InputRequired()])
+# --- Login Form တည်ဆောက်ခြင်း (Import အမှား ပြင်ထား) ---
+class LoginForm(WtformsForm): # 'form.Form' မဟုတ်ပါ
+    username = StringField(validators=[validators.InputRequired()]) # 'fields.StringField' မဟုတ်ပါ
+    password = PasswordField(validators=[validators.InputRequired()]) # 'fields.PasswordField' မဟုတ်ပါ
 
 # --- Flask App ကို တည်ဆောက်မယ့် ပင်မ Function (Factory) ---
 def create_app():
@@ -143,14 +148,12 @@ def create_app():
         # (ဒါက နောက်တစ်ဆင့်မှ ဆက်လုပ်ပါမယ်)
         return "Order Received (Bot function not yet built)", 200
         
-    # --- !!! အဆင့်သစ် - လျှို့ဝှက် Admin Account ဆောက်မယ့် Link !!! ---
+    # --- လျှို့ဝှက် Admin Account ဆောက်မယ့် Link ---
     @app.route('/create_first_admin_123xyz')
     def create_first_admin():
         try:
-            # User ဇယားထဲမှာ admin ရှိ၊ မရှိ အရင်စစ်မယ်
             user_exists = db.session.query(User).filter_by(username='admin').first()
             if not user_exists:
-                # မရှိမှ အသစ်ဆောက်မယ်
                 u = User(username='admin')
                 u.set_password('12345') # Password ကို 12345 လို့ ပေးထားတယ်
                 db.session.add(u)
