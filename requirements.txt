@@ -1,5 +1,10 @@
 flask
-python-telegram-bot
 gunicorn
-psycopg2-binary
 requests
+python-telegram-bot
+flask-admin
+flask-login
+flask-wtf
+werkzeug
+Flask-SQLAlchemy
+psycopg2-binary
